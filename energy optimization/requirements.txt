@@ -1,0 +1,7 @@
+nordpool
+requests
+jupyter
+pandas
+datetime
+random
+deap
