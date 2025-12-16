@@ -34,9 +34,9 @@ def battery_constraints(t, D, B, Bmax):
     return B[t] < D[t] or B[t] > Bmax
     
 
-def load_constraints(t, D, Gl, state):
-    # Load (t) = Gl(t) + D(t)
-    return abs(Gl[t] + D[t] - state["load"].iloc[t]) < 1
+def load_constraints(t, D, Gl, gen, state):
+    # Load (t) = Gl(t) + D(t) + gen(t)
+    return abs(Gl[t] + D[t] + gen[t] - state["load"].iloc[t]) < 1
     
 
 def bounded_constraint(individual, LOWER_BOUNDS, UPPER_BOUNDS):
