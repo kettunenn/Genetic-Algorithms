@@ -30,6 +30,9 @@ def battery_sim(D,Gb,g, state, Bmax=100, N_HOURS=24):
 
     for t in range(N_HOURS):
         B[t + 1] = B[t] - D[t] + g[t]*solar_gen(t, state) + Gb[t]
+        
+        if (B[t + 1] > Bmax):
+            B[t + 1] = Bmax
 
         if constraints.battery_constraints(t, D, B, Bmax):
             return False
