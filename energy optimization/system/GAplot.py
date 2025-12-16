@@ -37,7 +37,9 @@ def plot_battery(D,Gb,g, state):
 
     plt.plot(Gb, label='G_Charge')
 
-    plt.plot(gen, label='S_Charge')
+
+
+    plt.plot(gen/g * (np.ones(len(g)) - g), label='S_Charge')
 
     plt.legend()
     plt.show()
