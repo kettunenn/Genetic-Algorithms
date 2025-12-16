@@ -21,7 +21,7 @@ def solar_gen(t, state, S=2000):
 
 
 def electricity_price(Gb, Gl, t, state):
-    return (Gb[t] + Gl[t]) * state["spotprice"].iloc[t]
+    return (Gb[t] + Gl[t]) * state["spotprice"].iloc[t]/1000
 
 
 
