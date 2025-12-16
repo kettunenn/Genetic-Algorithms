@@ -3,5 +3,6 @@ requests
 jupyter
 pandas
 datetime
-random
+# random
 deap
+xlrd

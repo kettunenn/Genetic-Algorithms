@@ -1,6 +1,8 @@
 import numpy as np
-import system_ as sys
-import constraints as constraints
+# import system_ as sys
+from system import system_ as sys
+from system import constraints as constraints
+
 
 # -----------------------------
 # Design parameters 
@@ -13,16 +15,33 @@ import constraints as constraints
 
 
 def unpack(individual, N_HOURS=24):
-    D   = individual[0:N_HOURS]
-    Gb  = individual[N_HOURS:2*N_HOURS]
-    Gl  = individual[2*N_HOURS:3*N_HOURS]
-    g   = individual[3*N_HOURS:4*N_HOURS]
-    return D, Gb, Gl, g
-
-
-def create_individual(LOWER_BOUNDS, UPPER_BOUNDS):
     
-    return np.random.uniform(LOWER_BOUNDS, UPPER_BOUNDS)
+    D   = individual[0:N_HOURS]
+    Gl  = individual[N_HOURS:2*N_HOURS]
+    Gb  = individual[2*N_HOURS:3*N_HOURS]
+    g   = individual[3*N_HOURS:4*N_HOURS]
+    return D, Gl, Gb, g
+
+
+
+def create_individual(LOWER_BOUNDS, UPPER_BOUNDS, N_HOURS=24):
+    Dmax, Glmax, Gbmax, gmax = unpack(UPPER_BOUNDS)
+
+    alpha = np.random.uniform(0.55, 1, N_HOURS)
+
+    
+    Gl = np.clip(alpha * Glmax, 0, Glmax)
+    Gl[0] = Glmax[0]
+    D  = np.clip((1 - alpha) * Glmax, 0, Dmax)
+    D[0] = 0
+    
+    Gb = np.random.uniform(0, Gbmax, size=N_HOURS)
+
+    g = np.random.uniform(0, gmax, size=N_HOURS)
+
+    return np.concatenate([D, Gl, Gb, g])
+
+    # return np.random.uniform(LOWER_BOUNDS, UPPER_BOUNDS)
 
 
 def create_population(individuals, genome, LOWER_BOUNDS, UPPER_BOUNDS):
@@ -36,29 +55,30 @@ def create_population(individuals, genome, LOWER_BOUNDS, UPPER_BOUNDS):
 
 
 def fitness(individual, state, LOWER_BOUNDS, UPPER_BOUNDS, constraint):
-    D, Gb, Gl, g = unpack(individual)
+    D, Gl, Gb, g = unpack(individual)
     penalty = 0
 
     Dmax, Glmax, Gbmax, Bmax, N_HOURS = constraint
    
     if not sys.battery_sim(D,Gb,g, state, Bmax):
         # print("battery constraint error")
-        penalty = 1e6
+        penalty += 1e6
 
     for t in range(N_HOURS):
         
         if not constraints.load_constraints(t, D, Gl, state):
             # print("load constraint error")
+            # penalty += 10 * sum(max(0, abs(Gl+D-state["load"])-1))
             penalty = 1e6
     
     
     if not constraints.bounded_constraint(individual, LOWER_BOUNDS, UPPER_BOUNDS):
         # print("Bounded error")
-        penalty = 1e6
+        penalty += 1e6
     
 
     cost = sys.cost(Gb,Gl, state)
-    print(cost + penalty)
+
     return (cost + penalty, )
 
 

@@ -1,7 +1,8 @@
 import numpy as np
+from datalayer import getdata as getdata
 
 def general_constraints(Dmax=30,                #Battery discharge limit
-                        Glmax=30,               #Grid battery charging
+                        Glmax=60,               #Grid battery charging
                         Gbmax=20,               #Grid supply
                         Bmax=100,               #Battery size
                         N_HOURS=24):
@@ -13,9 +14,12 @@ def general_constraints(Dmax=30,                #Battery discharge limit
         np.zeros(N_HOURS)           # gamma ≥ 0
     ])
 
+    state = getdata.gen_state()
+    
+
     UPPER_BOUNDS = np.concatenate([
         np.ones(N_HOURS) * Dmax,    # D
-        np.ones(N_HOURS) * Glmax,   # Gl
+        state["load"],
         np.ones(N_HOURS) * Gbmax,   # Gb
         np.ones(N_HOURS)            # gamma ∈ [0,1]
     ])
@@ -32,7 +36,7 @@ def battery_constraints(t, D, B, Bmax):
 
 def load_constraints(t, D, Gl, state):
     # Load (t) = Gl(t) + D(t)
-    return abs(Gl[t] + D[t] - state["load"].iloc[t]) > 1e3
+    return abs(Gl[t] + D[t] - state["load"].iloc[t]) < 1
     
 
 def bounded_constraint(individual, LOWER_BOUNDS, UPPER_BOUNDS):

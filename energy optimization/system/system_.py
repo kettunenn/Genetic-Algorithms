@@ -1,7 +1,6 @@
 import numpy as np
-from deap import base, creator, tools
 import random
-import constraints
+from system import constraints as constraints
 
 
 
@@ -32,7 +31,7 @@ def battery_sim(D,Gb,g, state, Bmax=100, N_HOURS=24):
     for t in range(N_HOURS):
         B[t + 1] = B[t] - D[t] + g[t]*solar_gen(t, state) + Gb[t]
 
-        if not constraints.battery_constraints(t, D, B, Bmax):
+        if constraints.battery_constraints(t, D, B, Bmax):
             return False
 
     return True

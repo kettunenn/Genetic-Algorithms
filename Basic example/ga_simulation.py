@@ -71,18 +71,6 @@ def crossover(population, p_crossover,genome,p_mutation):
     return offspring
 
 
-#genome = 50
-#individuals = 20
-#p_crossover = 0.6
-#p_mutation = 0.03
-
-#pop = create_population()
-
-#pop_fitness = evaluate_population(pop)
-
-
-
-
 def simulation(genome, individuals, p_crossover, p_mutation, max_iterations):
     t = 0
     fitness_growth = []
