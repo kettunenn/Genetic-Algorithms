@@ -1,7 +1,7 @@
 import numpy as np
 from deap import base, creator, tools
 import random
-import system.GA as GA
+from modules import GA as GA
 
 
 ##################################
@@ -18,7 +18,7 @@ import system.GA as GA
 
 Dmax = 30             #kW
 Glmax = 30            #kW
-Gbmax = 20          #kW
+Gbmax = 20            #kW
 Bmax = 150            #kW
 N_HOURS = 24
 

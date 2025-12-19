@@ -1,7 +1,7 @@
 import numpy as np
 # import system_ as sys
-from system import system_ as sys
-from system import constraints as constraints
+from modules import system_ as sys
+from modules import constraints as constraints
 from deap import base, creator, tools
 import random
 
@@ -64,24 +64,28 @@ def fitness(individual, state, LOWER_BOUNDS, UPPER_BOUNDS, constraint):
     check, gen, B = sys.battery_sim2(D,Gb,g, state, Bmax)
 
     if not check:
-        print("battery constraint error")
+        # print("battery constraint error")
         penalty += 1e6
 
     for t in range(N_HOURS):
         
         if not constraints.load_constraints(t, D, Gl, gen, state):
-            print("load constraint error")
+            # print("load constraint error")
             # penalty += 10 * sum(max(0, abs(Gl+D-state["load"])-1))
             penalty = 1e6
     
     
     if not constraints.bounded_constraint(individual, LOWER_BOUNDS, UPPER_BOUNDS):
-        print("Bounded error")
+        # print("Bounded error")
         penalty += 1e6
+    
     
 
     cost = sys.cost(Gb,Gl, state)
-
+    # cost -= SOC_T * future_price
+    # SOC_T = B[-1]
+    # future_price = np.mean(state["spotprice"])/1000  # or max, or percentile
+    
     return (cost + penalty, )
 
 
@@ -103,7 +107,7 @@ def simulation(POP_SIZE, MAX_GEN, state, LOWER_BOUNDS, UPPER_BOUNDS, constraint)
     toolbox.register("mate", tools.cxBlend, alpha=0.3)
 
     CXPB = 0.9  # crossover probability
-    MUTPB = 0.2 # Mutation probability
+    MUTPB = 0.3 # Mutation probability
 
     toolbox.register(
         "mutate",

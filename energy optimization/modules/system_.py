@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from system import constraints as constraints
+from modules import constraints as constraints
 
 
 
